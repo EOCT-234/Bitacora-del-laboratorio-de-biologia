@@ -5,6 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitácora Diaria - Laboratorio de Biología</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos adicionales para la gestión de turnos guardados */
+    .seccion-salida-control {
+      background-color: #e9ecef;
+      border: 2px dashed #0f5132;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alerta-exito {
+      background-color: #d1e7dd;
+      color: #0f5132;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,11 +34,22 @@
       </p>
     </header>
 
-    <!-- Formulario configurado con ambos correos -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST" onsubmit="enviarWhatsAppOpcional(event)">
+    <div id="alertaExito" class="alerta-exito">
+      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron en este dispositivo. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar la salida.
+    </div>
+
+    <!-- Módulo de Selección de Registro para Salida -->
+    <div class="seccion-salida-control">
+      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
+      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px;">
+        <option value="">-- Nuevo Ingreso (Sin cargar datos anteriores) --</option>
+      </select>
+    </div>
+
+    <!-- Formulario de envío -->
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST">
       
-      <!-- Configuración oculta para FormSubmit -->
-      <input type="hidden" name="_subject" value="Nuevo Registro: Bitácora Lab. Biología">
+      <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
 
       <!-- Sección 1: Ingreso y Personal -->
@@ -109,6 +138,13 @@
         </div>
       </fieldset>
 
+      <!-- Botón intermedio para guardar datos al ingresar -->
+      <div style="margin-bottom: 25px;">
+        <button type="button" onclick="guardarProgresoEntrada()" style="background-color: #6c757d;">
+          💾 Guardar solo datos de INGRESO (Pausar para completar al salir)
+        </button>
+      </div>
+
       <!-- Sección 5: Cierre y Salida -->
       <fieldset>
         <legend>5. Cierre y Salida</legend>
@@ -134,24 +170,125 @@
         </div>
       </fieldset>
 
-      <button type="submit">Enviar Bitácora al Correo</button>
+      <button type="submit" onclick="limpiarRegistroCompletado()">Enviar Bitácora Completa al Correo</button>
     </form>
   </div>
 
   <script>
+    let registroActualId = null;
+
     document.addEventListener('DOMContentLoaded', function() {
-      // 1. BLOQUEAR FECHAS PASADAS (Solo permite fechas de hoy en adelante)
+      // Bloquear fechas pasadas
       const inputFecha = document.getElementById('fecha');
       const hoy = new Date();
-      
       const year = hoy.getFullYear();
       const month = String(hoy.getMonth() + 1).padStart(2, '0');
       const day = String(hoy.getDate()).padStart(2, '0');
-      
       const fechaActual = `${year}-${month}-${day}`;
+      
       inputFecha.min = fechaActual;
       inputFecha.value = fechaActual;
+
+      // Cargar lista de registros pendientes en el selector
+      actualizarSelectorRegistros();
     });
+
+    // Guardar el estado de entrada en LocalStorage
+    function guardarProgresoEntrada() {
+      const responsable = document.getElementById('responsable').value;
+      const horaIngreso = document.getElementById('hora_ingreso').value;
+
+      if (!responsable || !horaIngreso) {
+        alert('Por favor ingrese al menos la Hora de Ingreso y el Responsable antes de guardar.');
+        return;
+      }
+
+      const form = document.getElementById('bitacoraForm');
+      const formData = new FormData(form);
+      const datos = {};
+
+      formData.forEach((value, key) => {
+        if (datos[key]) {
+          if (!Array.isArray(datos[key])) {
+            datos[key] = [datos[key]];
+          }
+          datos[key].push(value);
+        } else {
+          datos[key] = value;
+        }
+      });
+
+      const id = registroActualId || 'registro_' + Date.now();
+      const titulo = `${responsable} - Ingreso: ${horaIngreso}`;
+
+      let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
+      registrosGuardados[id] = { titulo, datos };
+
+      localStorage.setItem('bitacoras_pendientes', JSON.stringify(registrosGuardados));
+
+      document.getElementById('alertaExito').style.display = 'block';
+      actualizarSelectorRegistros();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Actualiza las opciones del desplegable
+    function actualizarSelectorRegistros() {
+      const selector = document.getElementById('selector_registros');
+      selector.innerHTML = '<option value="">-- Nuevo Ingreso (Sin cargar datos anteriores) --</option>';
+
+      const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
+
+      for (const [id, item] of Object.entries(registrosGuardados)) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = item.titulo;
+        selector.appendChild(option);
+      }
+    }
+
+    // Cargar los datos guardados en el formulario
+    function cargarDatosGuardados(id) {
+      if (!id) {
+        registroActualId = null;
+        document.getElementById('bitacoraForm').reset();
+        return;
+      }
+
+      registroActualId = id;
+      const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
+      const registro = registrosGuardados[id];
+
+      if (registro && registro.datos) {
+        const datos = registro.datos;
+
+        // Limpiar checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+        // Llenar datos
+        Object.keys(datos).forEach(key => {
+          const elementos = document.getElementsByName(key);
+          if (elementos.length > 0) {
+            if (elementos[0].type === 'checkbox') {
+              const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
+              elementos.forEach(cb => {
+                if (valores.includes(cb.value)) cb.checked = true;
+              });
+            } else {
+              elementos[0].value = datos[key];
+            }
+          }
+        });
+      }
+    }
+
+    // Eliminar el registro temporal cuando ya se envía la salida completa
+    function limpiarRegistroCompletado() {
+      if (registroActualId) {
+        let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
+        delete registrosGuardados[registroActualId];
+        localStorage.setItem('bitacoras_pendientes', JSON.stringify(registrosGuardados));
+      }
+    }
   </script>
 
 </body>
