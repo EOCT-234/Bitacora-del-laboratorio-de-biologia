@@ -17,7 +17,7 @@
     </header>
 
     <!-- Formulario configurado con ambos correos -->
-    <form action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST">
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST" onsubmit="enviarWhatsAppOpcional(event)">
       
       <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro: Bitácora Lab. Biología">
@@ -49,7 +49,7 @@
         </div>
       </fieldset>
 
-      <!-- Sección 2: Equipos y Materiales -->
+      <!-- Sección 2: Equipos -->
       <fieldset>
         <legend>2. Equipos a Usar</legend>
         
@@ -68,7 +68,7 @@
         </div>
       </fieldset>
 
-      <!-- Sección 3: Materiales/reactivos -->
+      <!-- Sección 3: Materiales/Reactivos -->
       <fieldset>
         <legend>3. Materiales / Reactivos a Usar</legend>
         
@@ -138,9 +138,9 @@
     </form>
   </div>
 
-  <!-- SCRIPT PARA BLOQUEAR FECHAS PASADAS -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // 1. BLOQUEAR FECHAS PASADAS (Solo permite fechas de hoy en adelante)
       const inputFecha = document.getElementById('fecha');
       const hoy = new Date();
       
@@ -149,11 +149,33 @@
       const day = String(hoy.getDate()).padStart(2, '0');
       
       const fechaActual = `${year}-${month}-${day}`;
-      
-      // Asigna la fecha mínima (hoy) y la selecciona por defecto
       inputFecha.min = fechaActual;
       inputFecha.value = fechaActual;
     });
+
+    // 2. FUNCIÓN OPCIONAL DE WHATSAPP AL ENVIAR
+    function enviarWhatsAppOpcional(event) {
+      // Reemplaza con tu número completo (Código de país + número, sin '+')
+      // Ejemplo Perú: "51977620020"
+      const numeroTelefono = "51977620020"; 
+
+      const fecha = document.getElementById('fecha').value;
+      const ingreso = document.getElementById('hora_ingreso').value;
+      const salida = document.getElementById('hora_salida').value;
+      const responsable = document.getElementById('responsable').value;
+      const actividades = document.getElementById('actividades').value;
+
+      let mensaje = `*BITÁCORA LAB. BIOLOGÍA*%0A`;
+      mensaje += `*Fecha:* ${fecha}%0A`;
+      mensaje += `*Horario:* ${ingreso} a ${salida}%0A`;
+      mensaje += `*Responsable:* ${responsable}%0A`;
+      mensaje += `*Actividades:* ${actividades}%0A`;
+
+      const urlWhatsApp = `https://wa.me/${51977620020}?text=${mensaje}`;
+
+      // Abre WhatsApp en otra pestaña antes de procesar el envío por correo
+      window.open(urlWhatsApp, '_blank');
+    }
   </script>
 
 </body>
