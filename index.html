@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bitácora Diaria - Laboratorio de Biología</title>
+  <title>Laboratorio de Biología</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .seccion-salida-control {
@@ -27,7 +27,7 @@
 
   <div class="container">
     <header>
-      <h1>Bitácora Diaria – Laboratorio de Biología</h1>
+      <h1>Bitácora – Laboratorio de Biología</h1>
       <p class="description">
         Registro obligatorio de ingreso, personal asignado, uso de equipamiento, actividades ejecutadas y hora de salida.
       </p>
@@ -37,16 +37,9 @@
       <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable para registrar su salida.
     </div>
 
-    <!-- Módulo de Selección de Registro para Salida -->
-    <div class="seccion-salida-control">
-      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
-      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px; width: 100%; padding: 8px;">
-        <option value="">-- Nuevo Ingreso (Sin cargar datos anteriores) --</option>
-      </select>
-    </div>
 
     <!-- Formulario de envío -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST">
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,7577995921@untrm.edu.pe" method="POST">
       
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
@@ -142,10 +135,19 @@
         <!-- Botón intermedio de guardado -->
         <div style="margin-bottom: 25px;">
           <button type="button" onclick="guardarProgresoEntrada()" style="background-color: #6c757d;">
-            💾 Guardar datos de INGRESO (Para completar al salir)
+            💾 Guardar Ingreso
           </button>
         </div>
       </div>
+
+
+          <!-- Módulo de Selección de Registro para Salida -->
+    <div class="seccion-salida-control">
+      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
+      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px; width: 100%; padding: 8px;">
+        <option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>
+      </select>
+    </div>
 
       <!-- Sección 5: Cierre y Salida (Siempre visible) -->
       <fieldset>
