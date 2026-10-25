@@ -21,6 +21,10 @@
       margin-bottom: 15px;
       display: none;
     }
+    /* Ocultar sección de cierre por defecto */
+    #bloqueSalida {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -34,9 +38,16 @@
     </header>
 
     <div id="alertaExito" class="alerta-exito">
-      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable para registrar su salida.
+      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
     </div>
 
+    <!-- Módulo de Selección de Registro para Salida -->
+    <div class="seccion-salida-control">
+      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
+      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px; width: 100%; padding: 8px;">
+        <option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>
+      </select>
+    </div>
 
     <!-- Formulario de envío -->
     <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
@@ -44,7 +55,7 @@
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
 
-      <!-- Contenedor de datos de ingreso (Se oculta al registrar la salida) -->
+      <!-- Contenedor de datos de ingreso (Se muestra por defecto para nuevos ingresos) -->
       <div id="bloqueIngreso">
         <!-- Sección 1: Ingreso y Personal -->
         <fieldset>
@@ -140,43 +151,35 @@
         </div>
       </div>
 
-
-          <!-- Módulo de Selección de Registro para Salida -->
-    <div class="seccion-salida-control">
-      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
-      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px; width: 100%; padding: 8px;">
-        <option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>
-      </select>
-
-
-            <!-- Sección 5: Cierre y Salida (Siempre visible) -->
-      <fieldset>
-        <legend>5. Cierre y Salida</legend>
-        
-        <div class="form-group">
-          <label for="hora_salida">Hora de salida:</label>
-          <input type="time" id="hora_salida" name="Hora de Salida" required>
-        </div>
-
-        <div class="form-group">
-          <label>Verificación de bioseguridad y orden:</label>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Equipos apagados"> Equipos apagados y desconectados</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Mesas desinfectadas"> Mesas y superficies desinfectadas</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Residuos descartados"> Residuos biológicos descartados</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Acceso cerrado"> Puertas y ventanas aseguradas</label>
+      <!-- Sección 5: Cierre y Salida (Oculto por defecto, se activa solo al seleccionar registro de salida) -->
+      <div id="bloqueSalida">
+        <fieldset>
+          <legend>5. Cierre y Salida</legend>
+          
+          <div class="form-group">
+            <label for="hora_salida">Hora de salida:</label>
+            <input type="time" id="hora_salida" name="Hora de Salida" required>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="incidencias">Observaciones o incidencias:</label>
-          <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
-        </div>
-      </fieldset>
+          <div class="form-group">
+            <label>Verificación de bioseguridad y orden:</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Equipos apagados"> Equipos apagados y desconectados</label>
+              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Mesas desinfectadas"> Mesas y superficies desinfectadas</label>
+              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Residuos descartados"> Residuos biológicos descartados</label>
+              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Acceso cerrado"> Puertas y ventanas aseguradas</label>
+            </div>
+          </div>
 
-      <button type="submit" onclick="limpiarRegistroCompletado()">Guardar Salida</button>
+          <div class="form-group">
+            <label for="incidencias">Observaciones o incidencias:</label>
+            <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
+          </div>
+        </fieldset>
+
+        <button type="submit" onclick="limpiarRegistroCompletado()">Guardar Salida y Enviar Bitácora</button>
+      </div>
     </form>
-    </div>
   </div>
 
   <script>
@@ -238,7 +241,7 @@
     // Actualiza la lista desplegable de registros pendientes
     function actualizarSelectorRegistros() {
       const selector = document.getElementById('selector_registros');
-      selector.innerHTML = '<option value="">-- Nuevo Ingreso (Sin cargar datos anteriores) --</option>';
+      selector.innerHTML = '<option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>';
 
       const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
 
@@ -250,17 +253,29 @@
       }
     }
 
-    // Cargar los datos y ocultar/mostrar las secciones correspondientes
+    // Cargar los datos y controlar visibilidad de bloques
     function cargarDatosGuardados(id) {
       const bloqueIngreso = document.getElementById('bloqueIngreso');
+      const bloqueSalida = document.getElementById('bloqueSalida');
 
       if (!id) {
+        // MODO NUEVO INGRESO
         registroActualId = null;
         document.getElementById('bitacoraForm').reset();
-        bloqueIngreso.style.display = 'block'; // Mostrar secciones de ingreso
+        
+        // Volver a configurar fecha de hoy tras el reset
+        const hoy = new Date();
+        const year = hoy.getFullYear();
+        const month = String(hoy.getMonth() + 1).padStart(2, '0');
+        const day = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById('fecha').value = `${year}-${month}-${day}`;
+
+        bloqueIngreso.style.display = 'block'; // Muestra secciones 1 a 4
+        bloqueSalida.style.display = 'none';   // Oculta sección 5 y botón de envío
         return;
       }
 
+      // MODO REGISTRO DE SALIDA
       registroActualId = id;
       const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
       const registro = registrosGuardados[id];
@@ -271,7 +286,7 @@
         // Limpiar checkboxes
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-        // Rellenar datos en los campos ocultos/visibles
+        // Rellenar datos guardados
         Object.keys(datos).forEach(key => {
           const elementos = document.getElementsByName(key);
           if (elementos.length > 0) {
@@ -286,12 +301,13 @@
           }
         });
 
-        // OCULTAR las secciones 1, 2, 3 y 4 al registrar la salida
+        // Alternar visibilidad: Oculta ingreso y Muestra salida
         bloqueIngreso.style.display = 'none';
+        bloqueSalida.style.display = 'block';
       }
     }
 
-    // Eliminar el registro de la memoria al enviar la bitácora
+    // Eliminar el registro de la memoria local al enviar la salida
     function limpiarRegistroCompletado() {
       if (registroActualId) {
         let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
