@@ -17,7 +17,7 @@
     </header>
 
     <!-- REEMPLAZA TU_CORREO@AQUI.COM POR TU CORREO REAL -->
-    <form action="https://formsubmit.co/TU_CORREO@AQUI.COM" method="POST">
+    <form action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
       
       <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro: Bitácora Lab. Biología">
@@ -40,7 +40,7 @@
 
         <div class="form-group">
           <label for="responsable">Responsable / Encargado del turno:</label>
-          <input type="text" id="responsable" name="Responsable del Turno" placeholder="Ej. Dr. Juan Pérez" required>
+          <input type="text" id="responsable" name="Responsable del Turno" placeholder="Ej. Juan Pérez" required>
         </div>
 
         <div class="form-group">
@@ -58,20 +58,37 @@
           <div class="checkbox-group">
             <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Microscopios / Estereoscopios"> Microscopios / Estereoscopios</label>
             <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Centrífuga"> Centrífuga / Ultracentrífuga</label>
-            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Autoclave / Incubadora"> Autoclave / Incubadora</label>
-            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Cabina de Flujo Laminar"> Cabina de flujo laminar</label>
-            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Espectrofotómetro"> Espectrofotómetro</label>
-            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Termociclador (PCR)"> Termociclador (PCR)</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Estufa"> Estufa</label>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="reactivos">Reactivos o muestras sensibles a utilizar:</label>
-          <input type="text" id="reactivos" name="Reactivos / Muestras" placeholder="Ej. Reactivos controlados, cepas, tinción...">
+          <label for="reactivos">Otros equipos a usar:</label>
+          <input type="text" id="reactivos" name="Otros equipos a usar" placeholder="Ingrese aqui el equipo que no esté enlistado">
         </div>
       </fieldset>
 
-      <!-- Sección 3: Actividades -->
+
+     <fieldset>
+        <legend>3. Materiales/reactivos a Usar</legend>
+        
+        <div class="form-group">
+          <label>Seleccionar equipos requeridos:</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Agua destilada"> Agua destilada</label>
+            <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Placas petri"> Placas petri</label>
+            <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Vaso de precipitado"> Vaso de precipitado</label>
+            <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Cinta parafilm"> Cinta parafilm</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reactivos">Otros materiales/reactivos a usar:</label>
+          <input type="text" id="reactivos" name="Otros materiales/reactivos a usar:" placeholder="Ej. Reactivos controlados, cepas, tinción...">
+        </div>
+      </fieldset>
+
+      <!-- Sección 4: Actividades -->
       <fieldset>
         <legend>3. Actividades a Realizar</legend>
         
@@ -79,12 +96,11 @@
           <label for="area">Área / Proyecto:</label>
           <select id="area" name="Área / Proyecto" required>
             <option value="" disabled selected>Seleccione un área...</option>
-            <option value="Microbiología">Microbiología</option>
-            <option value="Biología Molecular">Biología Molecular</option>
-            <option value="Cultivo Celular">Cultivo Celular</option>
-            <option value="Botánica / Zoología">Botánica / Zoología</option>
-            <option value="Docencia / Práctica guiada">Docencia / Práctica guiada</option>
-            <option value="Otro">Otro</option>
+            <option value="Sala de siembra">Sala de siembra</option>
+            <option value="Sala de encubación">Sala de encubación</option>
+            <option value="Sala de trabajo del laboratorio">Sala de trabajo del laboratorio</option>
+            <option value="Almacén">Almacén</option>
+            <option value="Oficina">Oficina</option>
           </select>
         </div>
 
