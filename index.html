@@ -21,11 +21,9 @@
       margin-bottom: 15px;
       display: none;
     }
-    /* Ocultar sección de cierre por defecto */
     #bloqueSalida {
       display: none;
     }
-    /* Estilos para previsualizar imágenes */
     .preview-foto {
       max-width: 200px;
       max-height: 200px;
@@ -47,7 +45,7 @@
     </header>
 
     <div id="alertaExito" class="alerta-exito">
-      <strong>¡Ingreso registrado!</strong> Sus datos y foto de ingreso se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
+      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
     </div>
 
     <!-- Módulo de Selección de Registro para Salida -->
@@ -58,13 +56,12 @@
       </select>
     </div>
 
-    <!-- Formulario de envío (enctype multipart necesario para envío de fotos) -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST" enctype="multipart/form-data">
+    <!-- Formulario de envío -->
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST" enctype="multipart/form-data" onsubmit="prepararEnvioFinal(event)">
       
       <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
-      <!-- REDIRECCIÓN AUTOMÁTICA -->
       <input type="hidden" name="_next" value="https://eoct-234.github.io/Bitacora-del-laboratorio-de-biologia/">
 
       <!-- Contenedor de datos de ingreso (Se muestra por defecto) -->
@@ -97,7 +94,7 @@
           <!-- CAMPO FOTO DE INGRESO -->
           <div class="form-group">
             <label for="foto_ingreso">📷 Foto del área/ingreso al laboratorio:</label>
-            <input type="file" id="foto_ingreso" name="Foto_Ingreso" accept="image/*" capture="environment" onchange="previsualizarYGuardarFoto(this, 'previewIngreso')">
+            <input type="file" id="foto_ingreso" name="Foto_Ingreso" accept="image/*" capture="environment" onchange="previsualizarFoto(this, 'previewIngreso')">
             <img id="previewIngreso" class="preview-foto" alt="Vista previa ingreso">
           </div>
         </fieldset>
@@ -176,7 +173,7 @@
           
           <div class="form-group">
             <label for="hora_salida">Hora de salida:</label>
-            <input type="time" id="hora_salida" name="Hora de Salida" required>
+            <input type="time" id="hora_salida" name="Hora de Salida">
           </div>
 
           <div class="form-group">
@@ -192,7 +189,7 @@
           <!-- CAMPO FOTO DE SALIDA -->
           <div class="form-group">
             <label for="foto_salida">📷 Foto del estado/cierre del laboratorio:</label>
-            <input type="file" id="foto_salida" name="Foto_Salida" accept="image/*" capture="environment" onchange="previsualizarYGuardarFoto(this, 'previewSalida')">
+            <input type="file" id="foto_salida" name="Foto_Salida" accept="image/*" capture="environment" onchange="previsualizarFoto(this, 'previewSalida')">
             <img id="previewSalida" class="preview-foto" alt="Vista previa salida">
           </div>
 
@@ -202,15 +199,13 @@
           </div>
         </fieldset>
 
-        <button type="submit" onclick="limpiarRegistroCompletado()">Guardar Salida y Enviar Bitácora</button>
+        <button type="submit">Guardar Salida y Enviar Bitácora</button>
       </div>
     </form>
   </div>
 
   <script>
     let registroActualId = null;
-    let fotoIngresoBase64 = "";
-    let fotoSalidaBase64 = "";
 
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('bitacoraForm').reset();
@@ -235,19 +230,13 @@
       actualizarSelectorRegistros();
     });
 
-    // Convierte las fotos cargadas a Base64 y muestra vista previa
-    function previsualizarYGuardarFoto(input, idPreview) {
+    function previsualizarFoto(input, idPreview) {
       const preview = document.getElementById(idPreview);
       if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
           preview.src = e.target.result;
           preview.style.display = 'block';
-          if (idPreview === 'previewIngreso') {
-            fotoIngresoBase64 = e.target.result;
-          } else {
-            fotoSalidaBase64 = e.target.result;
-          }
         };
         reader.readAsDataURL(input.files[0]);
       }
@@ -280,9 +269,6 @@
         }
       });
 
-      // Incluir foto de ingreso codificada
-      datos['fotoIngresoBase64'] = fotoIngresoBase64;
-
       const id = registroActualId || 'registro_' + Date.now();
       const titulo = `${responsable} - Ingreso: ${horaIngreso}`;
 
@@ -296,7 +282,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Actualiza la lista desplegable de registros pendientes
     function actualizarSelectorRegistros() {
       const selector = document.getElementById('selector_registros');
       selector.innerHTML = '<option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>';
@@ -311,18 +296,19 @@
       }
     }
 
-    // Cargar los datos guardados
     function cargarDatosGuardados(id) {
       const bloqueIngreso = document.getElementById('bloqueIngreso');
       const bloqueSalida = document.getElementById('bloqueSalida');
 
       if (!id) {
         registroActualId = null;
-        fotoIngresoBase64 = "";
         document.getElementById('bitacoraForm').reset();
         document.getElementById('previewIngreso').style.display = 'none';
         document.getElementById('previewSalida').style.display = 'none';
         
+        // Reactivar campos requeridos de ingreso
+        activarCamposRequeridosIngreso(true);
+
         const hoy = new Date();
         const year = hoy.getFullYear();
         const month = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -344,35 +330,37 @@
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
         Object.keys(datos).forEach(key => {
-          if (key === 'fotoIngresoBase64') {
-            fotoIngresoBase64 = datos[key];
-            if (fotoIngresoBase64) {
-              const preview = document.getElementById('previewIngreso');
-              preview.src = fotoIngresoBase64;
-              preview.style.display = 'block';
-            }
-          } else {
-            const elementos = document.getElementsByName(key);
-            if (elementos.length > 0) {
-              if (elementos[0].type === 'checkbox') {
-                const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
-                elementos.forEach(cb => {
-                  if (valores.includes(cb.value)) cb.checked = true;
-                });
-              } else {
-                elementos[0].value = datos[key];
-              }
+          const elementos = document.getElementsByName(key);
+          if (elementos.length > 0) {
+            if (elementos[0].type === 'checkbox') {
+              const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
+              elementos.forEach(cb => {
+                if (valores.includes(cb.value)) cb.checked = true;
+              });
+            } else {
+              elementos[0].value = datos[key];
             }
           }
         });
 
+        // Desactivar campos requeridos de ingreso para que no bloqueen la salida
+        activarCamposRequeridosIngreso(false);
+
         bloqueIngreso.style.display = 'none';
         bloqueSalida.style.display = 'block';
+        document.getElementById('hora_salida').required = true;
       }
     }
 
-    // Eliminar el registro temporal al enviar
-    function limpiarRegistroCompletado() {
+    function activarCamposRequeridosIngreso(estado) {
+      document.getElementById('fecha').required = estado;
+      document.getElementById('hora_ingreso').required = estado;
+      document.getElementById('responsable').required = estado;
+      document.getElementById('personal').required = estado;
+      document.getElementById('actividades').required = estado;
+    }
+
+    function prepararEnvioFinal(e) {
       if (registroActualId) {
         let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
         delete registrosGuardados[registroActualId];
