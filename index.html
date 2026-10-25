@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitácora Diaria - Laboratorio de Biología</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Bitácora Diaria – Laboratorio de Biología</h1>
+      <p class="description">
+        Registro obligatorio de ingreso, personal asignado, uso de equipamiento, actividades ejecutadas y hora de salida.
+      </p>
+    </header>
+
+    <!-- REEMPLAZA TU_CORREO@AQUI.COM POR TU CORREO REAL -->
+    <form action="https://formsubmit.co/TU_CORREO@AQUI.COM" method="POST">
+      
+      <!-- Configuración oculta para FormSubmit -->
+      <input type="hidden" name="_subject" value="Nuevo Registro: Bitácora Lab. Biología">
+      <input type="hidden" name="_template" value="table">
+
+      <!-- Sección 1: Ingreso y Personal -->
+      <fieldset>
+        <legend>1. Datos de Ingreso y Personal</legend>
+        
+        <div class="grid-row">
+          <div class="form-group">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="Fecha" required>
+          </div>
+          <div class="form-group">
+            <label for="hora_ingreso">Hora de ingreso:</label>
+            <input type="time" id="hora_ingreso" name="Hora de Ingreso" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="responsable">Responsable / Encargado del turno:</label>
+          <input type="text" id="responsable" name="Responsable del Turno" placeholder="Ej. Dr. Juan Pérez" required>
+        </div>
+
+        <div class="form-group">
+          <label for="personal">Personal o estudiantes presentes:</label>
+          <textarea id="personal" name="Personal Presente" rows="2" placeholder="Listar nombres de auxiliares, tesistas o alumnos..." required></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Sección 2: Equipos y Materiales -->
+      <fieldset>
+        <legend>2. Equipos y Materiales a Usar</legend>
+        
+        <div class="form-group">
+          <label>Seleccionar equipos requeridos:</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Microscopios / Estereoscopios"> Microscopios / Estereoscopios</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Centrífuga"> Centrífuga / Ultracentrífuga</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Autoclave / Incubadora"> Autoclave / Incubadora</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Cabina de Flujo Laminar"> Cabina de flujo laminar</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Espectrofotómetro"> Espectrofotómetro</label>
+            <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Termociclador (PCR)"> Termociclador (PCR)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reactivos">Reactivos o muestras sensibles a utilizar:</label>
+          <input type="text" id="reactivos" name="Reactivos / Muestras" placeholder="Ej. Reactivos controlados, cepas, tinción...">
+        </div>
+      </fieldset>
+
+      <!-- Sección 3: Actividades -->
+      <fieldset>
+        <legend>3. Actividades a Realizar</legend>
+        
+        <div class="form-group">
+          <label for="area">Área / Proyecto:</label>
+          <select id="area" name="Área / Proyecto" required>
+            <option value="" disabled selected>Seleccione un área...</option>
+            <option value="Microbiología">Microbiología</option>
+            <option value="Biología Molecular">Biología Molecular</option>
+            <option value="Cultivo Celular">Cultivo Celular</option>
+            <option value="Botánica / Zoología">Botánica / Zoología</option>
+            <option value="Docencia / Práctica guiada">Docencia / Práctica guiada</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="actividades">Detalle de las actividades ejecutadas:</label>
+          <textarea id="actividades" name="Detalle de Actividades" rows="4" placeholder="Describa brevemente el procedimiento o ensayo a realizar..." required></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Sección 4: Cierre y Salida -->
+      <fieldset>
+        <legend>4. Cierre y Salida</legend>
+        
+        <div class="form-group">
+          <label for="hora_salida">Hora de salida:</label>
+          <input type="time" id="hora_salida" name="Hora de Salida" required>
+        </div>
+
+        <div class="form-group">
+          <label>Verificación de bioseguridad y orden:</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Equipos apagados"> Equipos apagados y desconectados</label>
+            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Mesas desinfectadas"> Mesas y superficies desinfectadas</label>
+            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Residuos descartados"> Residuos biológicos descartados</label>
+            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Acceso cerrado"> Puertas y ventanas aseguradas</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="incidencias">Observaciones o incidencias:</label>
+          <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
+        </div>
+      </fieldset>
+
+      <button type="submit">Enviar Bitácora al Correo</button>
+    </form>
+  </div>
+
+</body>
+</html>
