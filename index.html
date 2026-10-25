@@ -45,7 +45,7 @@
 
         <div class="form-group">
           <label for="personal">Personal o estudiantes presentes:</label>
-          <textarea id="personal" name="Personal Presente" rows="2" placeholder="Listar nombres de auxiliares, tesistas o alumnos..." required></textarea>
+          <textarea id="personal" name="Personal Presente" rows="2" placeholder="Si no hay nadie más, voler a escribir su nommbre aquí" required></textarea>
         </div>
       </fieldset>
 
@@ -90,7 +90,7 @@
 
       <!-- Sección 4: Actividades -->
       <fieldset>
-        <legend>3. Actividades a Realizar</legend>
+        <legend>4. Actividades a Realizar</legend>
         
         <div class="form-group">
           <label for="area">Área / Proyecto:</label>
@@ -103,6 +103,22 @@
             <option value="Oficina">Oficina</option>
           </select>
         </div>
+
+
+    <fieldset>
+        <legend>4. Actividades a Realizar</legend>
+        
+        <div class="form-group">
+          <label>Área / Proyecto:</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de siembra"> Sala de siembra</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de encubación"> Sala de encubación</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de trabajo del laboratorio"> Sala de trabajo del laboratorio</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Almacén"> Almacén</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Oficina"> Oficina</label>
+          </div>
+        </div>
+      </fieldset>
 
         <div class="form-group">
           <label for="actividades">Detalle de las actividades ejecutadas:</label>
