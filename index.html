@@ -16,8 +16,8 @@
       </p>
     </header>
 
-    <!-- REEMPLAZA TU_CORREO@AQUI.COM POR TU CORREO REAL -->
-    <form action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
+    <!-- Formulario configurado con ambos correos -->
+    <form action="https://formsubmit.co/campostroyesedgar@gmail.com,vichas.camtro@gamil.com" method="POST">
       
       <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro: Bitácora Lab. Biología">
@@ -45,13 +45,13 @@
 
         <div class="form-group">
           <label for="personal">Personal o estudiantes presentes:</label>
-          <textarea id="personal" name="Personal Presente" rows="2" placeholder="Si no hay nadie más, voler a escribir su nommbre aquí" required></textarea>
+          <textarea id="personal" name="Personal Presente" rows="2" placeholder="Si no hay nadie más, volver a escribir su nombre aquí" required></textarea>
         </div>
       </fieldset>
 
       <!-- Sección 2: Equipos y Materiales -->
       <fieldset>
-        <legend>2. Equipos y Materiales a Usar</legend>
+        <legend>2. Equipos a Usar</legend>
         
         <div class="form-group">
           <label>Seleccionar equipos requeridos:</label>
@@ -63,17 +63,17 @@
         </div>
 
         <div class="form-group">
-          <label for="reactivos">Otros equipos a usar:</label>
-          <input type="text" id="reactivos" name="Otros equipos a usar" placeholder="Ingrese aqui el equipo que no esté enlistado">
+          <label for="otros_equipos">Otros equipos a usar:</label>
+          <input type="text" id="otros_equipos" name="Otros equipos a usar" placeholder="Ingrese aquí el equipo que no esté enlistado">
         </div>
       </fieldset>
 
-
-     <fieldset>
-        <legend>3. Materiales/reactivos a Usar</legend>
+      <!-- Sección 3: Materiales/reactivos -->
+      <fieldset>
+        <legend>3. Materiales / Reactivos a Usar</legend>
         
         <div class="form-group">
-          <label>Seleccionar equipos requeridos:</label>
+          <label>Seleccionar materiales requeridos:</label>
           <div class="checkbox-group">
             <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Agua destilada"> Agua destilada</label>
             <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Placas petri"> Placas petri</label>
@@ -83,25 +83,25 @@
         </div>
 
         <div class="form-group">
-          <label for="reactivos">Otros materiales/reactivos a usar:</label>
-          <input type="text" id="reactivos" name="Otros materiales/reactivos a usar:" placeholder="Ej. Reactivos controlados, cepas, tinción...">
+          <label for="otros_materiales">Otros materiales/reactivos a usar:</label>
+          <input type="text" id="otros_materiales" name="Otros materiales/reactivos a usar" placeholder="Ej. Reactivos controlados, cepas, tinción...">
         </div>
       </fieldset>
 
       <!-- Sección 4: Actividades -->
+      <fieldset>
         <legend>4. Actividades a Realizar</legend>
         
         <div class="form-group">
           <label>Área / Proyecto:</label>
           <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de siembra"> Sala de siembra</label>
-            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de encubación"> Sala de encubación</label>
-            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Sala de trabajo del laboratorio"> Sala de trabajo del laboratorio</label>
-            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Almacén"> Almacén</label>
-            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto:[]" value="Oficina"> Oficina</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de siembra"> Sala de siembra</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de incubación"> Sala de incubación</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de trabajo del laboratorio"> Sala de trabajo del laboratorio</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Almacén"> Almacén</label>
+            <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Oficina"> Oficina</label>
           </div>
         </div>
-      </fieldset>
 
         <div class="form-group">
           <label for="actividades">Detalle de las actividades ejecutadas:</label>
@@ -109,9 +109,9 @@
         </div>
       </fieldset>
 
-      <!-- Sección 4: Cierre y Salida -->
+      <!-- Sección 5: Cierre y Salida -->
       <fieldset>
-        <legend>4. Cierre y Salida</legend>
+        <legend>5. Cierre y Salida</legend>
         
         <div class="form-group">
           <label for="hora_salida">Hora de salida:</label>
@@ -137,6 +137,24 @@
       <button type="submit">Enviar Bitácora al Correo</button>
     </form>
   </div>
+
+  <!-- SCRIPT PARA BLOQUEAR FECHAS PASADAS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputFecha = document.getElementById('fecha');
+      const hoy = new Date();
+      
+      const year = hoy.getFullYear();
+      const month = String(hoy.getMonth() + 1).padStart(2, '0');
+      const day = String(hoy.getDate()).padStart(2, '0');
+      
+      const fechaActual = `${year}-${month}-${day}`;
+      
+      // Asigna la fecha mínima (hoy) y la selecciona por defecto
+      inputFecha.min = fechaActual;
+      inputFecha.value = fechaActual;
+    });
+  </script>
 
 </body>
 </html>
