@@ -50,10 +50,13 @@
     </div>
 
     <!-- Formulario de envío -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,7577995921@untrm.edu.pe" method="POST">
       
+      <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
+      <!-- REDIRECCIÓN AUTOMÁTICA A TU ENLACE COMPLETO EN GITHUB PAGES -->
+      <input type="hidden" name="_next" value="https://eoct-234.github.io/Bitacora-del-laboratorio-de-biologia/">
 
       <!-- Contenedor de datos de ingreso (Se muestra por defecto para nuevos ingresos) -->
       <div id="bloqueIngreso">
@@ -186,16 +189,16 @@
     let registroActualId = null;
 
     document.addEventListener('DOMContentLoaded', function() {
-      // 1. REINICIALIZAR ESTADO DE LA PÁGINA AL ACTUALIZAR (F5)
+      // Reinicializar estado de la página al actualizar (F5)
       document.getElementById('bitacoraForm').reset();
       
       const selector = document.getElementById('selector_registros');
-      selector.value = ""; // Vuelve a "-- Nuevo Ingreso --"
+      selector.value = "";
       
-      document.getElementById('bloqueIngreso').style.display = 'block'; // Muestra Secciones 1-4
-      document.getElementById('bloqueSalida').style.display = 'none';   // Oculta Sección 5
+      document.getElementById('bloqueIngreso').style.display = 'block';
+      document.getElementById('bloqueSalida').style.display = 'none';
 
-      // 2. Configurar fecha actual (hoy)
+      // Configurar fecha actual (hoy)
       const inputFecha = document.getElementById('fecha');
       const hoy = new Date();
       const year = hoy.getFullYear();
@@ -206,7 +209,6 @@
       inputFecha.min = fechaActual;
       inputFecha.value = fechaActual;
 
-      // 3. Cargar la lista de registros guardados previamente
       actualizarSelectorRegistros();
     });
 
