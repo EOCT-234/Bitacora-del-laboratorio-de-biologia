@@ -25,6 +25,15 @@
     #bloqueSalida {
       display: none;
     }
+    /* Estilos para previsualizar imágenes */
+    .preview-foto {
+      max-width: 200px;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 6px;
+      display: none;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
@@ -38,7 +47,7 @@
     </header>
 
     <div id="alertaExito" class="alerta-exito">
-      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
+      <strong>¡Ingreso registrado!</strong> Sus datos y foto de ingreso se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
     </div>
 
     <!-- Módulo de Selección de Registro para Salida -->
@@ -49,16 +58,16 @@
       </select>
     </div>
 
-    <!-- Formulario de envío -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
+    <!-- Formulario de envío (enctype multipart necesario para envío de fotos) -->
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,7577995921@untrm.edu.pe" method="POST" enctype="multipart/form-data">
       
       <!-- Configuración oculta para FormSubmit -->
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
-      <!-- REDIRECCIÓN AUTOMÁTICA A TU ENLACE COMPLETO EN GITHUB PAGES -->
+      <!-- REDIRECCIÓN AUTOMÁTICA -->
       <input type="hidden" name="_next" value="https://eoct-234.github.io/Bitacora-del-laboratorio-de-biologia/">
 
-      <!-- Contenedor de datos de ingreso (Se muestra por defecto para nuevos ingresos) -->
+      <!-- Contenedor de datos de ingreso (Se muestra por defecto) -->
       <div id="bloqueIngreso">
         <!-- Sección 1: Ingreso y Personal -->
         <fieldset>
@@ -76,13 +85,20 @@
           </div>
 
           <div class="form-group">
-            <label for="responsable">Responsable:</label>
+            <label for="responsable">Responsable / Encargado del turno:</label>
             <input type="text" id="responsable" name="Responsable del Turno" placeholder="Ej. Juan Pérez" required>
           </div>
 
           <div class="form-group">
             <label for="personal">Personal o estudiantes presentes:</label>
             <textarea id="personal" name="Personal Presente" rows="2" placeholder="Si no hay nadie más, volver a escribir su nombre aquí" required></textarea>
+          </div>
+
+          <!-- CAMPO FOTO DE INGRESO -->
+          <div class="form-group">
+            <label for="foto_ingreso">📷 Foto del área/ingreso al laboratorio:</label>
+            <input type="file" id="foto_ingreso" name="Foto_Ingreso" accept="image/*" capture="environment" onchange="previsualizarYGuardarFoto(this, 'previewIngreso')">
+            <img id="previewIngreso" class="preview-foto" alt="Vista previa ingreso">
           </div>
         </fieldset>
 
@@ -93,14 +109,14 @@
           <div class="form-group">
             <label>Seleccionar equipos requeridos:</label>
             <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Microscopios / Estereoscopios"> Microscopios</label>
+              <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Microscopios"> Microscopios</label>
               <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Estufa"> Estufa</label>
             </div>
           </div>
 
           <div class="form-group">
             <label for="otros_equipos">Otros equipos a usar:</label>
-            <input type="text" id="otros_equipos" name="Otros equipos a usar" placeholder="Ingrese aquí el equipo que no está en la lista">
+            <input type="text" id="otros_equipos" name="Otros equipos a usar" placeholder="Ingrese aquí el equipo que no esté enlistado">
           </div>
         </fieldset>
 
@@ -129,7 +145,7 @@
           <legend>4. Actividades a Realizar</legend>
           
           <div class="form-group">
-            <label>Área del laboratorio:</label>
+            <label>Área / Proyecto:</label>
             <div class="checkbox-group">
               <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de siembra"> Sala de siembra</label>
               <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de incubación"> Sala de incubación</label>
@@ -173,6 +189,13 @@
             </div>
           </div>
 
+          <!-- CAMPO FOTO DE SALIDA -->
+          <div class="form-group">
+            <label for="foto_salida">📷 Foto del estado/cierre del laboratorio:</label>
+            <input type="file" id="foto_salida" name="Foto_Salida" accept="image/*" capture="environment" onchange="previsualizarYGuardarFoto(this, 'previewSalida')">
+            <img id="previewSalida" class="preview-foto" alt="Vista previa salida">
+          </div>
+
           <div class="form-group">
             <label for="incidencias">Observaciones o incidencias:</label>
             <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
@@ -186,9 +209,10 @@
 
   <script>
     let registroActualId = null;
+    let fotoIngresoBase64 = "";
+    let fotoSalidaBase64 = "";
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Reinicializar estado de la página al actualizar (F5)
       document.getElementById('bitacoraForm').reset();
       
       const selector = document.getElementById('selector_registros');
@@ -197,7 +221,7 @@
       document.getElementById('bloqueIngreso').style.display = 'block';
       document.getElementById('bloqueSalida').style.display = 'none';
 
-      // Configurar fecha actual (hoy)
+      // Configurar fecha actual
       const inputFecha = document.getElementById('fecha');
       const hoy = new Date();
       const year = hoy.getFullYear();
@@ -210,6 +234,24 @@
 
       actualizarSelectorRegistros();
     });
+
+    // Convierte las fotos cargadas a Base64 y muestra vista previa
+    function previsualizarYGuardarFoto(input, idPreview) {
+      const preview = document.getElementById(idPreview);
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          if (idPreview === 'previewIngreso') {
+            fotoIngresoBase64 = e.target.result;
+          } else {
+            fotoSalidaBase64 = e.target.result;
+          }
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
 
     // Guardar progreso de entrada en el navegador
     function guardarProgresoEntrada() {
@@ -226,15 +268,20 @@
       const datos = {};
 
       formData.forEach((value, key) => {
-        if (datos[key]) {
-          if (!Array.isArray(datos[key])) {
-            datos[key] = [datos[key]];
+        if (key !== 'Foto_Ingreso' && key !== 'Foto_Salida') {
+          if (datos[key]) {
+            if (!Array.isArray(datos[key])) {
+              datos[key] = [datos[key]];
+            }
+            datos[key].push(value);
+          } else {
+            datos[key] = value;
           }
-          datos[key].push(value);
-        } else {
-          datos[key] = value;
         }
       });
+
+      // Incluir foto de ingreso codificada
+      datos['fotoIngresoBase64'] = fotoIngresoBase64;
 
       const id = registroActualId || 'registro_' + Date.now();
       const titulo = `${responsable} - Ingreso: ${horaIngreso}`;
@@ -264,15 +311,17 @@
       }
     }
 
-    // Cargar los datos y controlar visibilidad de bloques
+    // Cargar los datos guardados
     function cargarDatosGuardados(id) {
       const bloqueIngreso = document.getElementById('bloqueIngreso');
       const bloqueSalida = document.getElementById('bloqueSalida');
 
       if (!id) {
-        // MODO NUEVO INGRESO
         registroActualId = null;
+        fotoIngresoBase64 = "";
         document.getElementById('bitacoraForm').reset();
+        document.getElementById('previewIngreso').style.display = 'none';
+        document.getElementById('previewSalida').style.display = 'none';
         
         const hoy = new Date();
         const year = hoy.getFullYear();
@@ -285,7 +334,6 @@
         return;
       }
 
-      // MODO REGISTRO DE SALIDA
       registroActualId = id;
       const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
       const registro = registrosGuardados[id];
@@ -296,26 +344,34 @@
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
         Object.keys(datos).forEach(key => {
-          const elementos = document.getElementsByName(key);
-          if (elementos.length > 0) {
-            if (elementos[0].type === 'checkbox') {
-              const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
-              elementos.forEach(cb => {
-                if (valores.includes(cb.value)) cb.checked = true;
-              });
-            } else {
-              elementos[0].value = datos[key];
+          if (key === 'fotoIngresoBase64') {
+            fotoIngresoBase64 = datos[key];
+            if (fotoIngresoBase64) {
+              const preview = document.getElementById('previewIngreso');
+              preview.src = fotoIngresoBase64;
+              preview.style.display = 'block';
+            }
+          } else {
+            const elementos = document.getElementsByName(key);
+            if (elementos.length > 0) {
+              if (elementos[0].type === 'checkbox') {
+                const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
+                elementos.forEach(cb => {
+                  if (valores.includes(cb.value)) cb.checked = true;
+                });
+              } else {
+                elementos[0].value = datos[key];
+              }
             }
           }
         });
 
-        // Alternar visibilidad: Oculta ingreso y Muestra salida
         bloqueIngreso.style.display = 'none';
         bloqueSalida.style.display = 'block';
       }
     }
 
-    // Eliminar el registro de la memoria local al enviar la salida
+    // Eliminar el registro temporal al enviar
     function limpiarRegistroCompletado() {
       if (registroActualId) {
         let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
