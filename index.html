@@ -177,34 +177,6 @@
       <button type="submit" onclick="limpiarRegistroCompletado()">Guardar Salida</button>
     </form>
     </div>
-
-      <!-- Sección 5: Cierre y Salida (Siempre visible) -->
-      <fieldset>
-        <legend>5. Cierre y Salida</legend>
-        
-        <div class="form-group">
-          <label for="hora_salida">Hora de salida:</label>
-          <input type="time" id="hora_salida" name="Hora de Salida" required>
-        </div>
-
-        <div class="form-group">
-          <label>Verificación de bioseguridad y orden:</label>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Equipos apagados"> Equipos apagados y desconectados</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Mesas desinfectadas"> Mesas y superficies desinfectadas</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Residuos descartados"> Residuos biológicos descartados</label>
-            <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Acceso cerrado"> Puertas y ventanas aseguradas</label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="incidencias">Observaciones o incidencias:</label>
-          <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
-        </div>
-      </fieldset>
-
-      <button type="submit" onclick="limpiarRegistroCompletado()">Guardar Salida</button>
-    </form>
   </div>
 
   <script>
