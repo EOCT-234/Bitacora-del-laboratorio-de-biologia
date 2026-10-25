@@ -156,8 +156,8 @@
     // 2. FUNCIÓN OPCIONAL DE WHATSAPP AL ENVIAR
     function enviarWhatsAppOpcional(event) {
       // Reemplaza con tu número completo (Código de país + número, sin '+')
-      // Ejemplo Perú: "51977620020"
-      const numeroTelefono = "51977620020"; 
+      // Ejemplo Perú: "51910149927"
+      const numeroTelefono = "51910149927"; 
 
       const fecha = document.getElementById('fecha').value;
       const ingreso = document.getElementById('hora_ingreso').value;
@@ -171,7 +171,7 @@
       mensaje += `*Responsable:* ${responsable}%0A`;
       mensaje += `*Actividades:* ${actividades}%0A`;
 
-      const urlWhatsApp = `https://wa.me/${51977620020}?text=${mensaje}`;
+      const urlWhatsApp = `https://wa.me/${51910149927}?text=${mensaje}`;
 
       // Abre WhatsApp en otra pestaña antes de procesar el envío por correo
       window.open(urlWhatsApp, '_blank');
