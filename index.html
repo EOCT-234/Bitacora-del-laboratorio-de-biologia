@@ -50,7 +50,7 @@
     </div>
 
     <!-- Formulario de envío -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST">
+    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com,7577995921@untrm.edu.pe" method="POST">
       
       <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
       <input type="hidden" name="_template" value="table">
@@ -151,7 +151,7 @@
         </div>
       </div>
 
-      <!-- Sección 5: Cierre y Salida (Oculto por defecto, se activa solo al seleccionar registro de salida) -->
+      <!-- Sección 5: Cierre y Salida (Oculto por defecto) -->
       <div id="bloqueSalida">
         <fieldset>
           <legend>5. Cierre y Salida</legend>
@@ -186,7 +186,16 @@
     let registroActualId = null;
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Configurar fecha mínima (hoy)
+      // 1. REINICIALIZAR ESTADO DE LA PÁGINA AL ACTUALIZAR (F5)
+      document.getElementById('bitacoraForm').reset();
+      
+      const selector = document.getElementById('selector_registros');
+      selector.value = ""; // Vuelve a "-- Nuevo Ingreso --"
+      
+      document.getElementById('bloqueIngreso').style.display = 'block'; // Muestra Secciones 1-4
+      document.getElementById('bloqueSalida').style.display = 'none';   // Oculta Sección 5
+
+      // 2. Configurar fecha actual (hoy)
       const inputFecha = document.getElementById('fecha');
       const hoy = new Date();
       const year = hoy.getFullYear();
@@ -197,6 +206,7 @@
       inputFecha.min = fechaActual;
       inputFecha.value = fechaActual;
 
+      // 3. Cargar la lista de registros guardados previamente
       actualizarSelectorRegistros();
     });
 
@@ -263,15 +273,14 @@
         registroActualId = null;
         document.getElementById('bitacoraForm').reset();
         
-        // Volver a configurar fecha de hoy tras el reset
         const hoy = new Date();
         const year = hoy.getFullYear();
         const month = String(hoy.getMonth() + 1).padStart(2, '0');
         const day = String(hoy.getDate()).padStart(2, '0');
         document.getElementById('fecha').value = `${year}-${month}-${day}`;
 
-        bloqueIngreso.style.display = 'block'; // Muestra secciones 1 a 4
-        bloqueSalida.style.display = 'none';   // Oculta sección 5 y botón de envío
+        bloqueIngreso.style.display = 'block';
+        bloqueSalida.style.display = 'none';
         return;
       }
 
@@ -283,10 +292,8 @@
       if (registro && registro.datos) {
         const datos = registro.datos;
 
-        // Limpiar checkboxes
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-        // Rellenar datos guardados
         Object.keys(datos).forEach(key => {
           const elementos = document.getElementsByName(key);
           if (elementos.length > 0) {
