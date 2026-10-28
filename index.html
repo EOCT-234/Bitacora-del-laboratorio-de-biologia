@@ -102,7 +102,6 @@
 </main>
 
 <script>
-// ============ CONFIGURACIÓN: pega aquí la URL de Apps Script (termina en /exec) ============
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG-ltulICFdfJy5yXU52g--ACxRWaiqX-3nwit-jJ_Sbfr2bP24hTutmsNM8pol6mnLw/exec';
 // ===============================================================================================
 const LS = 'bitacora_pendientes';
@@ -140,7 +139,6 @@ function pintarPendientes() {
   sel.parentElement.hidden = !ids.length;
 }
 
-// La foto se reduce a 900 px; si falla, se continúa sin foto
 function reducir(file) {
   return new Promise(res => {
     if (!file) return res('');
@@ -164,7 +162,7 @@ document.querySelectorAll('input[type=file]').forEach(i => i.onchange = () => {
   if (i.files[0]) { p.src = URL.createObjectURL(i.files[0]); p.style.display = 'block'; } else p.style.display = 'none';
 });
 
-// Envía a Google. Devuelve true si Google confirmó; 'sin-confirmar' si se envió pero el navegador no dejó leer la respuesta.
+
 async function enviar(datos) {
   if (!urlValida()) throw new Error('falta configurar la URL de Apps Script en index.html');
   const cuerpo = JSON.stringify(datos);

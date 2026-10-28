@@ -1,8 +1,6 @@
 /**
  * Receptor de la Bitácora del Laboratorio de Biología (UNTRM).
- * Extensiones > Apps Script > pegar este código > Implementar > Nueva implementación
- * > Aplicación web (Ejecutar como: Yo | Acceso: Cualquier usuario) > copiar URL /exec.
- * Prueba: abre la URL /exec en el navegador; debe decir "Bitácora activa".
+ 
  */
 const SHEET_ID = '10IJwN5wLY_DscbgDeU_8pv-Jbqpw4u3YARSXPl0nun8';
 const HOJA = 'Registros';
