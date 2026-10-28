@@ -1,145 +1,64 @@
-:root {
-  --primary-color: #0f5132;
-  --secondary-color: #198754;
-  --bg-color: #f4f7f6;
-  --card-bg: #ffffff;
-  --text-color: #212529;
-  --border-color: #ced4da;
+:root{
+  --azul:#0b2a5b;      /* azul UNTRM (ajústalo si tu manual de marca indica otro) */
+  --azul-2:#163f86;
+  --dorado:#e2a914;    /* dorado del emblema */
+  --fondo:#eef1f6;
+  --tarjeta:#fff;
+  --texto:#1b2233;
+  --suave:#5b6477;
+  --borde:#cfd6e4;
+  --ok:#1e7b4a;
+  --error:#b3261e;
 }
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--fondo);color:var(--texto);
+  font-size:16px;line-height:1.45;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
 }
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  padding: 20px;
+.topbar{
+  background:var(--azul);color:#fff;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 16px;
+  border-bottom:4px solid var(--dorado);
 }
-
-.container {
-  max-width: 750px;
-  margin: 0 auto;
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+.topbar h1{font-size:1.2rem;font-weight:700}
+.topbar p{font-size:.85rem;opacity:.85;margin-top:2px}
+main{max-width:640px;margin:0 auto;padding:14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#dfe5f0;padding:5px;border-radius:12px;margin-bottom:14px}
+.tab{background:none;border:0;padding:12px;border-radius:9px;font:inherit;font-weight:600;color:var(--suave);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--azul);color:#fff}
+.tab .n{background:var(--dorado);color:var(--azul);border-radius:99px;padding:0 8px;margin-left:6px;font-size:.8rem}
+.card{background:var(--tarjeta);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(11,42,91,.12)}
+.card h2{font-size:1.05rem;color:var(--azul);margin-bottom:12px;padding-left:10px;border-left:4px solid var(--dorado)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.campo{margin-bottom:14px}
+label.t{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px}
+input[type=text],input[type=date],input[type=time],select,textarea{
+  width:100%;min-height:48px;padding:12px;border:1.5px solid var(--borde);border-radius:10px;
+  font:inherit;background:#fff;color:var(--texto);
 }
-
-header {
-  border-bottom: 3px solid var(--primary-color);
-  padding-bottom: 15px;
-  margin-bottom: 25px;
-  text-align: center;
-}
-
-h1 {
-  color: var(--primary-color);
-  font-size: 1.8rem;
-  margin-bottom: 8px;
-}
-
-p.description {
-  font-size: 0.95rem;
-  color: #555;
-  line-height: 1.4;
-}
-
-fieldset {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  background-color: #fafafa;
-}
-
-legend {
-  font-weight: bold;
-  color: var(--primary-color);
-  padding: 0 10px;
-  font-size: 1.1rem;
-}
-
-.grid-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-@media (max-width: 600px) {
-  .grid-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-}
-
-input[type="text"],
-input[type="time"],
-input[type="date"],
-select,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background-color: #fff;
-}
-
-input:focus, 
-select:focus, 
-textarea:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 5px rgba(25, 135, 84, 0.3);
-}
-
-.checkbox-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin-top: 5px;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: normal;
-}
-
-.checkbox-item input {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-button {
-  width: 100%;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 14px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-button:hover {
-  background-color: var(--secondary-color);
-}
+textarea{min-height:92px;resize:vertical}
+:is(input,select,textarea,button):focus-visible{outline:3px solid var(--dorado);outline-offset:1px;border-color:var(--azul)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{position:relative}
+.chips input{position:absolute;opacity:0;inset:0}
+.chips span{display:block;padding:11px 14px;border:1.5px solid var(--borde);border-radius:99px;font-size:.92rem;background:#fff}
+.chips input:checked+span{background:var(--azul);border-color:var(--azul);color:#fff}
+.chips input:focus-visible+span{outline:3px solid var(--dorado)}
+.foto{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border:2px dashed var(--azul-2);border-radius:10px;color:var(--azul);font-weight:600;cursor:pointer}
+.foto input{display:none}
+.foto img{max-width:100%;max-height:180px;border-radius:8px;display:none;margin-top:8px}
+.barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--borde);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+.barra button{display:block;width:100%;max-width:612px;margin:0 auto}
+.btn{min-height:52px;border:0;border-radius:12px;background:var(--azul);color:#fff;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
+.btn:active{background:var(--azul-2)}
+.btn:disabled{opacity:.6}
+.aviso{padding:12px 14px;border-radius:10px;margin-bottom:14px;display:none;font-size:.95rem}
+.aviso.ok{display:block;background:#dff3e8;color:var(--ok)}
+.aviso.error{display:block;background:#fbe4e2;color:var(--error)}
+.vacio{text-align:center;color:var(--suave);padding:18px 8px}
+[hidden]{display:none!important}
+@media(max-width:380px){.row{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){.btn{transition:background .15s}}

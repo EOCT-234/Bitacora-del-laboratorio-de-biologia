@@ -1,373 +1,224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laboratorio de Biología</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .seccion-salida-control {
-      background-color: #e9ecef;
-      border: 2px dashed #0f5132;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .alerta-exito {
-      background-color: #d1e7dd;
-      color: #0f5132;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      display: none;
-    }
-    #bloqueSalida {
-      display: none;
-    }
-    .preview-foto {
-      max-width: 200px;
-      max-height: 200px;
-      margin-top: 10px;
-      border-radius: 6px;
-      display: none;
-      border: 1px solid #ccc;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2a5b">
+<title>Bitácora – Laboratorio de Biología UNTRM</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header class="topbar">
+  <h1>Bitácora del Laboratorio de Biología</h1>
+  <p>UNTRM · Registro de ingreso y salida</p>
+</header>
 
-  <div class="container">
-    <header>
-      <h1>Bitácora – Laboratorio de Biología</h1>
-      <p class="description">
-        Registro obligatorio de ingreso, personal asignado, uso de equipamiento, actividades ejecutadas y hora de salida.
-      </p>
-    </header>
+<main>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tabIngreso" aria-selected="true">Ingreso</button>
+    <button class="tab" role="tab" id="tabSalida" aria-selected="false">Salida<span class="n" id="contador">0</span></button>
+  </div>
+  <div id="aviso" class="aviso" role="status"></div>
 
-    <div id="alertaExito" class="alerta-exito">
-      <strong>¡Ingreso registrado!</strong> Sus datos se guardaron localmente. Al finalizar la jornada, seleccione su nombre en el desplegable de abajo para registrar su salida.
-    </div>
+  <!-- INGRESO -->
+  <form id="formIngreso" autocomplete="off">
+    <section class="card">
+      <h2>Datos de ingreso</h2>
+      <div class="row">
+        <div class="campo"><label class="t" for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+        <div class="campo"><label class="t" for="hora_ingreso">Hora de ingreso</label><input type="time" id="hora_ingreso" required></div>
+      </div>
+      <div class="campo"><label class="t" for="responsable">Responsable del turno</label><input type="text" id="responsable" placeholder="Ej. Juan Pérez" required></div>
+      <div class="campo"><label class="t" for="personal">Personal o estudiantes presentes</label><textarea id="personal" placeholder="Si está solo, escriba su nombre" required></textarea></div>
+      <div class="campo">
+        <span class="t" style="display:block;font-weight:600;font-size:.92rem;margin-bottom:6px">Foto del ingreso (opcional)</span>
+        <label class="foto">📷 Tomar foto<input type="file" accept="image/*" capture="environment" data-prev="prevIn" id="fotoIn"></label>
+        <img id="prevIn" alt="Vista previa de la foto de ingreso" style="display:none;max-width:100%;max-height:180px;border-radius:8px;margin-top:8px">
+      </div>
+    </section>
 
-    <!-- Módulo de Selección de Registro para Salida -->
-    <div class="seccion-salida-control">
-      <label for="selector_registros"><strong>¿Vas a registrar tu SALIDA? Selecciona tu ingreso pendiente:</strong></label>
-      <select id="selector_registros" onchange="cargarDatosGuardados(this.value)" style="margin-top: 8px; width: 100%; padding: 8px;">
-        <option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>
-      </select>
-    </div>
+    <section class="card">
+      <h2>Equipos</h2>
+      <div class="chips campo" data-grupo="equipos">
+        <label><input type="checkbox" value="Microscopios"><span>Microscopios</span></label>
+        <label><input type="checkbox" value="Estufa"><span>Estufa</span></label>
+      </div>
+      <div class="campo"><label class="t" for="otros_equipos">Otros equipos</label><input type="text" id="otros_equipos" placeholder="Si no está en la lista"></div>
+    </section>
 
-    <!-- Formulario de envío -->
-    <form id="bitacoraForm" action="https://formsubmit.co/campostroyesedgar@gmail.com" method="POST" enctype="multipart/form-data" onsubmit="prepararEnvioFinal(event)">
-      
-      <!-- Configuración oculta para FormSubmit -->
-      <input type="hidden" name="_subject" value="Nuevo Registro Completo: Bitácora Lab. Biología">
-      <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_next" value="https://eoct-234.github.io/Bitacora-del-laboratorio-de-biologia/">
+    <section class="card">
+      <h2>Materiales y reactivos</h2>
+      <div class="chips campo" data-grupo="materiales">
+        <label><input type="checkbox" value="Agua destilada"><span>Agua destilada</span></label>
+        <label><input type="checkbox" value="Placas petri"><span>Placas petri</span></label>
+        <label><input type="checkbox" value="Vaso de precipitado"><span>Vaso de precipitado</span></label>
+        <label><input type="checkbox" value="Cinta parafilm"><span>Cinta parafilm</span></label>
+      </div>
+      <div class="campo"><label class="t" for="otros_materiales">Otros materiales o reactivos</label><input type="text" id="otros_materiales" placeholder="Ej. cepas, tinción…"></div>
+    </section>
 
-      <!-- Contenedor de datos de ingreso (Se muestra por defecto) -->
-      <div id="bloqueIngreso">
-        <!-- Sección 1: Ingreso y Personal -->
-        <fieldset>
-          <legend>1. Datos de Ingreso y Personal</legend>
-          
-          <div class="grid-row">
-            <div class="form-group">
-              <label for="fecha">Fecha:</label>
-              <input type="date" id="fecha" name="Fecha" required>
-            </div>
-            <div class="form-group">
-              <label for="hora_ingreso">Hora de ingreso:</label>
-              <input type="time" id="hora_ingreso" name="Hora de Ingreso" required>
-            </div>
-          </div>
+    <section class="card">
+      <h2>Actividades</h2>
+      <div class="chips campo" data-grupo="areas">
+        <label><input type="checkbox" value="Sala de siembra"><span>Sala de siembra</span></label>
+        <label><input type="checkbox" value="Sala de incubación"><span>Sala de incubación</span></label>
+        <label><input type="checkbox" value="Sala de trabajo"><span>Sala de trabajo</span></label>
+        <label><input type="checkbox" value="Almacén"><span>Almacén</span></label>
+        <label><input type="checkbox" value="Oficina"><span>Oficina</span></label>
+      </div>
+      <div class="campo"><label class="t" for="actividades">Detalle de las actividades</label><textarea id="actividades" placeholder="Describa brevemente el procedimiento o ensayo" required></textarea></div>
+    </section>
+    <div class="barra"><button class="btn" type="submit" id="btnIngreso">Registrar ingreso</button></div>
+  </form>
 
-          <div class="form-group">
-            <label for="responsable">Responsable / Encargado del turno:</label>
-            <input type="text" id="responsable" name="Responsable del Turno" placeholder="Ej. Juan Pérez" required>
-          </div>
-
-          <div class="form-group">
-            <label for="personal">Personal o estudiantes presentes:</label>
-            <textarea id="personal" name="Personal Presente" rows="2" placeholder="Si no hay nadie más, volver a escribir su nombre aquí" required></textarea>
-          </div>
-
-          <!-- CAMPO FOTO DE INGRESO -->
-          <div class="form-group">
-            <label for="foto_ingreso">📷 Foto del área/ingreso al laboratorio:</label>
-            <input type="file" id="foto_ingreso" name="Foto_Ingreso" accept="image/*" capture="environment" onchange="previsualizarFoto(this, 'previewIngreso')">
-            <img id="previewIngreso" class="preview-foto" alt="Vista previa ingreso">
-          </div>
-        </fieldset>
-
-        <!-- Sección 2: Equipos -->
-        <fieldset>
-          <legend>2. Equipos a Usar</legend>
-          
-          <div class="form-group">
-            <label>Seleccionar equipos requeridos:</label>
-            <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Microscopios"> Microscopios</label>
-              <label class="checkbox-item"><input type="checkbox" name="Equipos[]" value="Estufa"> Estufa</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="otros_equipos">Otros equipos a usar:</label>
-            <input type="text" id="otros_equipos" name="Otros equipos a usar" placeholder="Ingrese aquí el equipo que no esté enlistado">
-          </div>
-        </fieldset>
-
-        <!-- Sección 3: Materiales/Reactivos -->
-        <fieldset>
-          <legend>3. Materiales / Reactivos a Usar</legend>
-          
-          <div class="form-group">
-            <label>Seleccionar materiales requeridos:</label>
-            <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Agua destilada"> Agua destilada</label>
-              <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Placas petri"> Placas petri</label>
-              <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Vaso de precipitado"> Vaso de precipitado</label>
-              <label class="checkbox-item"><input type="checkbox" name="Materiales[]" value="Cinta parafilm"> Cinta parafilm</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="otros_materiales">Otros materiales/reactivos a usar:</label>
-            <input type="text" id="otros_materiales" name="Otros materiales/reactivos a usar" placeholder="Ej. Reactivos controlados, cepas, tinción...">
-          </div>
-        </fieldset>
-
-        <!-- Sección 4: Actividades -->
-        <fieldset>
-          <legend>4. Actividades a Realizar</legend>
-          
-          <div class="form-group">
-            <label>Área / Proyecto:</label>
-            <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de siembra"> Sala de siembra</label>
-              <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de incubación"> Sala de incubación</label>
-              <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Sala de trabajo del laboratorio"> Sala de trabajo del laboratorio</label>
-              <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Almacén"> Almacén</label>
-              <label class="checkbox-item"><input type="checkbox" name="Área / Proyecto[]" value="Oficina"> Oficina</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="actividades">Detalle de las actividades ejecutadas:</label>
-            <textarea id="actividades" name="Detalle de Actividades" rows="4" placeholder="Describa brevemente el procedimiento o ensayo a realizar..." required></textarea>
-          </div>
-        </fieldset>
-
-        <!-- Botón intermedio de guardado -->
-        <div style="margin-bottom: 25px;">
-          <button type="button" onclick="guardarProgresoEntrada()" style="background-color: #6c757d;">
-            💾 Guardar Ingreso
-          </button>
+  <!-- SALIDA -->
+  <form id="formSalida" hidden autocomplete="off">
+    <section class="card">
+      <h2>Mi ingreso pendiente</h2>
+      <div class="campo"><label class="t" for="pendiente">Seleccione su ingreso</label><select id="pendiente" required></select></div>
+      <p class="vacio" id="sinPendientes" hidden>No tiene ingresos pendientes en este celular. Registre primero su ingreso.</p>
+    </section>
+    <section class="card" id="datosSalida">
+      <h2>Cierre</h2>
+      <div class="campo"><label class="t" for="hora_salida">Hora de salida</label><input type="time" id="hora_salida" required></div>
+      <div class="campo">
+        <span class="t" style="display:block;font-weight:600;font-size:.92rem;margin-bottom:6px">Verificación de bioseguridad y orden</span>
+        <div class="chips" data-grupo="cierre">
+          <label><input type="checkbox" value="Equipos apagados"><span>Equipos apagados</span></label>
+          <label><input type="checkbox" value="Superficies desinfectadas"><span>Superficies desinfectadas</span></label>
+          <label><input type="checkbox" value="Residuos descartados"><span>Residuos descartados</span></label>
+          <label><input type="checkbox" value="Puertas y ventanas aseguradas"><span>Puertas y ventanas aseguradas</span></label>
         </div>
       </div>
-
-      <!-- Sección 5: Cierre y Salida (Oculto por defecto) -->
-      <div id="bloqueSalida">
-        <fieldset>
-          <legend>5. Cierre y Salida</legend>
-          
-          <div class="form-group">
-            <label for="hora_salida">Hora de salida:</label>
-            <input type="time" id="hora_salida" name="Hora de Salida">
-          </div>
-
-          <div class="form-group">
-            <label>Verificación de bioseguridad y orden:</label>
-            <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Equipos apagados"> Equipos apagados y desconectados</label>
-              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Mesas desinfectadas"> Mesas y superficies desinfectadas</label>
-              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Residuos descartados"> Residuos biológicos descartados</label>
-              <label class="checkbox-item"><input type="checkbox" name="Cierre[]" value="Acceso cerrado"> Puertas y ventanas aseguradas</label>
-            </div>
-          </div>
-
-          <!-- CAMPO FOTO DE SALIDA -->
-          <div class="form-group">
-            <label for="foto_salida">📷 Foto del estado/cierre del laboratorio:</label>
-            <input type="file" id="foto_salida" name="Foto_Salida" accept="image/*" capture="environment" onchange="previsualizarFoto(this, 'previewSalida')">
-            <img id="previewSalida" class="preview-foto" alt="Vista previa salida">
-          </div>
-
-          <div class="form-group">
-            <label for="incidencias">Observaciones o incidencias:</label>
-            <textarea id="incidencias" name="Observaciones / Incidencias" rows="2" placeholder="Reportar fallas de equipos, insumos agotados, etc."></textarea>
-          </div>
-        </fieldset>
-
-        <button type="submit">Guardar Salida y Enviar Bitácora</button>
+      <div class="campo">
+        <span class="t" style="display:block;font-weight:600;font-size:.92rem;margin-bottom:6px">Foto del cierre (opcional)</span>
+        <label class="foto">📷 Tomar foto<input type="file" accept="image/*" capture="environment" data-prev="prevOut" id="fotoOut"></label>
+        <img id="prevOut" alt="Vista previa de la foto de cierre" style="display:none;max-width:100%;max-height:180px;border-radius:8px;margin-top:8px">
       </div>
-    </form>
-  </div>
+      <div class="campo"><label class="t" for="observaciones">Observaciones o incidencias</label><textarea id="observaciones" placeholder="Fallas de equipos, insumos agotados…"></textarea></div>
+    </section>
+    <div class="barra"><button class="btn" type="submit" id="btnSalida">Registrar salida</button></div>
+  </form>
+</main>
 
-  <script>
-    let registroActualId = null;
+<script>
+// ============ CONFIGURACIÓN: pega aquí la URL de Apps Script (termina en /exec) ============
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG-ltulICFdfJy5yXU52g--ACxRWaiqX-3nwit-jJ_Sbfr2bP24hTutmsNM8pol6mnLw/exec';
+// ===============================================================================================
+const LS = 'bitacora_pendientes';
+const $ = id => document.getElementById(id);
+const pend = () => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } };
+const guardarPend = o => { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} };
+const marcados = g => [...document.querySelectorAll(`[data-grupo="${g}"] input:checked`)].map(c => c.value).join(', ');
+const ahora = () => new Date().toTimeString().slice(0, 5);
+const hoy = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const urlValida = () => /^https:\/\/script\.google\.com\/(?:a\/macros\/[^/]+\/)?macros\/s\/[^/]+\/exec$/.test(SCRIPT_URL) || /^https:\/\/script\.googleusercontent\.com\/.+/.test(SCRIPT_URL);
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('bitacoraForm').reset();
-      
-      const selector = document.getElementById('selector_registros');
-      selector.value = "";
-      
-      document.getElementById('bloqueIngreso').style.display = 'block';
-      document.getElementById('bloqueSalida').style.display = 'none';
+function aviso(msg, tipo) { const a = $('aviso'); a.textContent = msg; a.className = 'aviso ' + tipo; a.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+function limpiarAviso() { $('aviso').className = 'aviso'; }
+if (!urlValida()) aviso('Falta configurar la URL de Apps Script en index.html (variable SCRIPT_URL). Los datos no se guardarán hasta hacerlo.', 'error');
 
-      // Configurar fecha actual
-      const inputFecha = document.getElementById('fecha');
-      const hoy = new Date();
-      const year = hoy.getFullYear();
-      const month = String(hoy.getMonth() + 1).padStart(2, '0');
-      const day = String(hoy.getDate()).padStart(2, '0');
-      const fechaActual = `${year}-${month}-${day}`;
-      
-      inputFecha.min = fechaActual;
-      inputFecha.value = fechaActual;
+function pestaña(salida) {
+  $('tabIngreso').setAttribute('aria-selected', !salida);
+  $('tabSalida').setAttribute('aria-selected', salida);
+  $('formIngreso').hidden = salida; $('formSalida').hidden = !salida;
+  limpiarAviso();
+  if (salida) { pintarPendientes(); $('hora_salida').value = ahora(); }
+}
+$('tabIngreso').onclick = () => pestaña(false);
+$('tabSalida').onclick = () => pestaña(true);
 
-      actualizarSelectorRegistros();
-    });
+function pintarPendientes() {
+  const p = pend(), ids = Object.keys(p), sel = $('pendiente');
+  $('contador').textContent = ids.length;
+  sel.textContent = '';
+  ids.forEach(id => { const o = document.createElement('option'); o.value = id;
+    o.textContent = `${p[id].responsable} · ingreso ${p[id].hora_ingreso} (${p[id].fecha})`; sel.appendChild(o); });
+  $('sinPendientes').hidden = ids.length > 0;
+  $('datosSalida').hidden = !ids.length;
+  $('btnSalida').disabled = !ids.length;
+  sel.parentElement.hidden = !ids.length;
+}
 
-    function previsualizarFoto(input, idPreview) {
-      const preview = document.getElementById(idPreview);
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
+// La foto se reduce a 900 px; si falla, se continúa sin foto
+function reducir(file) {
+  return new Promise(res => {
+    if (!file) return res('');
+    const img = new Image(), url = URL.createObjectURL(file);
+    const fin = v => { URL.revokeObjectURL(url); res(v); };
+    img.onload = () => {
+      try {
+        const k = Math.min(1, 900 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        fin(c.toDataURL('image/jpeg', .7));
+      } catch (e) { fin(''); }
+    };
+    img.onerror = () => fin('');
+    setTimeout(() => fin(''), 15000);
+    img.src = url;
+  });
+}
+document.querySelectorAll('input[type=file]').forEach(i => i.onchange = () => {
+  const p = $(i.dataset.prev);
+  if (i.files[0]) { p.src = URL.createObjectURL(i.files[0]); p.style.display = 'block'; } else p.style.display = 'none';
+});
 
-    // Guardar progreso de entrada en el navegador
-    function guardarProgresoEntrada() {
-      const responsable = document.getElementById('responsable').value;
-      const horaIngreso = document.getElementById('hora_ingreso').value;
+// Envía a Google. Devuelve true si Google confirmó; 'sin-confirmar' si se envió pero el navegador no dejó leer la respuesta.
+async function enviar(datos) {
+  if (!urlValida()) throw new Error('falta configurar la URL de Apps Script en index.html');
+  const cuerpo = JSON.stringify(datos);
+  let r;
+  try {
+    r = await fetch(SCRIPT_URL, { method: 'POST', body: cuerpo, redirect: 'follow' }); // text/plain: sin bloqueo CORS
+  } catch (e) {
+    try { await fetch(SCRIPT_URL, { method: 'POST', body: cuerpo, mode: 'no-cors' }); return 'sin-confirmar'; }
+    catch (e2) { throw new Error('sin conexión a internet'); }
+  }
+  let j;
+  try { j = await r.json(); } catch (e) { throw new Error('la URL no responde como Apps Script; revise que la implementación sea "Cualquier usuario" y la URL termine en /exec'); }
+  if (!j.ok) throw new Error(j.error || 'error al guardar en la hoja');
+  return true;
+}
+const nota = r => r === 'sin-confirmar' ? ' (enviado; verifique que aparezca en la hoja)' : '';
 
-      if (!responsable || !horaIngreso) {
-        alert('Por favor complete al menos la Hora de Ingreso y el Responsable antes de guardar.');
-        return;
-      }
+$('formIngreso').onsubmit = async e => {
+  e.preventDefault(); limpiarAviso();
+  const b = $('btnIngreso'); b.disabled = true; b.textContent = 'Enviando…';
+  try {
+    const d = {
+      accion: 'ingreso', id: 'R' + Date.now(), fecha: $('fecha').value, hora_ingreso: $('hora_ingreso').value,
+      responsable: $('responsable').value.trim(), personal: $('personal').value.trim(),
+      equipos: marcados('equipos'), otros_equipos: $('otros_equipos').value.trim(),
+      materiales: marcados('materiales'), otros_materiales: $('otros_materiales').value.trim(),
+      areas: marcados('areas'), actividades: $('actividades').value.trim(),
+      foto: await reducir($('fotoIn').files[0])
+    };
+    const r = await enviar(d);
+    const p = pend(); p[d.id] = { responsable: d.responsable, hora_ingreso: d.hora_ingreso, fecha: d.fecha }; guardarPend(p);
+    e.target.reset(); $('prevIn').style.display = 'none'; iniciar(); pintarPendientes();
+    aviso('Ingreso registrado' + nota(r) + '. Al terminar, vaya a la pestaña Salida.', 'ok');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) { aviso('No se pudo registrar: ' + err.message + '. Sus datos siguen en pantalla; intente de nuevo.', 'error'); }
+  b.disabled = false; b.textContent = 'Registrar ingreso';
+};
 
-      const form = document.getElementById('bitacoraForm');
-      const formData = new FormData(form);
-      const datos = {};
+$('formSalida').onsubmit = async e => {
+  e.preventDefault(); limpiarAviso();
+  const b = $('btnSalida'); b.disabled = true; b.textContent = 'Enviando…';
+  try {
+    const id = $('pendiente').value;
+    const r = await enviar({ accion: 'salida', id, hora_salida: $('hora_salida').value, cierre: marcados('cierre'),
+      observaciones: $('observaciones').value.trim(), foto: await reducir($('fotoOut').files[0]) });
+    const p = pend(); delete p[id]; guardarPend(p);
+    e.target.reset(); $('prevOut').style.display = 'none'; $('hora_salida').value = ahora(); pintarPendientes();
+    aviso('Salida registrada' + nota(r) + '. ¡Gracias!', 'ok');
+  } catch (err) { aviso('No se pudo registrar: ' + err.message + '. Sus datos siguen en pantalla; intente de nuevo.', 'error'); b.disabled = false; }
+  b.textContent = 'Registrar salida';
+};
 
-      formData.forEach((value, key) => {
-        if (key !== 'Foto_Ingreso' && key !== 'Foto_Salida') {
-          if (datos[key]) {
-            if (!Array.isArray(datos[key])) {
-              datos[key] = [datos[key]];
-            }
-            datos[key].push(value);
-          } else {
-            datos[key] = value;
-          }
-        }
-      });
-
-      const id = registroActualId || 'registro_' + Date.now();
-      const titulo = `${responsable} - Ingreso: ${horaIngreso}`;
-
-      let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
-      registrosGuardados[id] = { titulo, datos };
-
-      localStorage.setItem('bitacoras_pendientes', JSON.stringify(registrosGuardados));
-
-      document.getElementById('alertaExito').style.display = 'block';
-      actualizarSelectorRegistros();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function actualizarSelectorRegistros() {
-      const selector = document.getElementById('selector_registros');
-      selector.innerHTML = '<option value="">-- Nuevo Ingreso (Sin datos anteriores) --</option>';
-
-      const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
-
-      for (const [id, item] of Object.entries(registrosGuardados)) {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = item.titulo;
-        selector.appendChild(option);
-      }
-    }
-
-    function cargarDatosGuardados(id) {
-      const bloqueIngreso = document.getElementById('bloqueIngreso');
-      const bloqueSalida = document.getElementById('bloqueSalida');
-
-      if (!id) {
-        registroActualId = null;
-        document.getElementById('bitacoraForm').reset();
-        document.getElementById('previewIngreso').style.display = 'none';
-        document.getElementById('previewSalida').style.display = 'none';
-        
-        // Reactivar campos requeridos de ingreso
-        activarCamposRequeridosIngreso(true);
-
-        const hoy = new Date();
-        const year = hoy.getFullYear();
-        const month = String(hoy.getMonth() + 1).padStart(2, '0');
-        const day = String(hoy.getDate()).padStart(2, '0');
-        document.getElementById('fecha').value = `${year}-${month}-${day}`;
-
-        bloqueIngreso.style.display = 'block';
-        bloqueSalida.style.display = 'none';
-        return;
-      }
-
-      registroActualId = id;
-      const registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
-      const registro = registrosGuardados[id];
-
-      if (registro && registro.datos) {
-        const datos = registro.datos;
-
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-        Object.keys(datos).forEach(key => {
-          const elementos = document.getElementsByName(key);
-          if (elementos.length > 0) {
-            if (elementos[0].type === 'checkbox') {
-              const valores = Array.isArray(datos[key]) ? datos[key] : [datos[key]];
-              elementos.forEach(cb => {
-                if (valores.includes(cb.value)) cb.checked = true;
-              });
-            } else {
-              elementos[0].value = datos[key];
-            }
-          }
-        });
-
-        // Desactivar campos requeridos de ingreso para que no bloqueen la salida
-        activarCamposRequeridosIngreso(false);
-
-        bloqueIngreso.style.display = 'none';
-        bloqueSalida.style.display = 'block';
-        document.getElementById('hora_salida').required = true;
-      }
-    }
-
-    function activarCamposRequeridosIngreso(estado) {
-      document.getElementById('fecha').required = estado;
-      document.getElementById('hora_ingreso').required = estado;
-      document.getElementById('responsable').required = estado;
-      document.getElementById('personal').required = estado;
-      document.getElementById('actividades').required = estado;
-    }
-
-    function prepararEnvioFinal(e) {
-      if (registroActualId) {
-        let registrosGuardados = JSON.parse(localStorage.getItem('bitacoras_pendientes') || '{}');
-        delete registrosGuardados[registroActualId];
-        localStorage.setItem('bitacoras_pendientes', JSON.stringify(registrosGuardados));
-      }
-    }
-  </script>
-
+function iniciar() { $('fecha').value = hoy(); $('hora_ingreso').value = ahora(); }
+iniciar(); pintarPendientes();
+</script>
 </body>
 </html>
